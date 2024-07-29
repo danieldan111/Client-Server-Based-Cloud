@@ -1,5 +1,6 @@
 import socket
 import threading
+import time
 
 HEADER = 64
 PORT = 5050
@@ -16,14 +17,30 @@ def handle_client(conn, addr):
 
     connected = True
     while connected:
-        msg_length = conn.recv(HEADER).decode(FORMAT)
-        if msg_length:
-            msg_length = int(msg_length)
-            msg = conn.recv(msg_length).decode(FORMAT)
-            if msg == DISCONNECT_MESSAGE:
-                connected = False
+        file_name = conn.recv(100).decode()
+        file_size = conn.recv(100).decode()
 
-            print(f"{addr} sends {msg}")
+        # Opening and reading file.
+        with open(file_name, "wb") as file:
+            size = 0
+            # Starting the time capture.
+            start_time = time.time()
+
+            # Running the loop while file is recieved.
+            while size <= int(file_size):
+                data = conn.recv(1024)
+                if not (data):
+                    break
+                file.write(data)
+                size += len(data)
+
+            # Ending the time capture.
+            end_time = time.time()
+
+        print("File transfer Complete.Total time: ", end_time - start_time)
+        
+        connected = False
+
     
     conn.close()
 
