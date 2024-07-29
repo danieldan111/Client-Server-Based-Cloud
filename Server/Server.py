@@ -1,6 +1,5 @@
 import socket
 import threading
-import time
 
 HEADER = 64
 PORT = 5050
@@ -9,37 +8,41 @@ ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DIS_MSG"
 
+#path to save
+PATH = "C:\\Users\\ADMIN\\Documents\\Cloud-Project\\Cloud Storage"
+
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
 def handle_client(conn, addr):
     print(f"NEW CONNECTION {addr} connected.")
-
     connected = True
+    
     while connected:
-        file_name = conn.recv(100).decode()
-        file_size = conn.recv(100).decode()
-
-        # Opening and reading file.
-        with open(file_name, "wb") as file:
-            size = 0
-            # Starting the time capture.
-            start_time = time.time()
-
-            # Running the loop while file is recieved.
-            while size <= int(file_size):
-                data = conn.recv(1024)
-                if not (data):
-                    break
-                file.write(data)
-                size += len(data)
-
-            # Ending the time capture.
-            end_time = time.time()
-
-        print("File transfer Complete.Total time: ", end_time - start_time)
+        file_name = conn.recv(100)
+        file_name = file_name.decode()
         
-        connected = False
+        #disconnect
+        if file_name.strip() == DISCONNECT_MESSAGE:
+            print("conn close")
+            connected = False
+
+        elif file_name:
+            file_size = conn.recv(100)
+            file_size = file_size.decode()
+
+            # Opening and reading file.
+            with open(PATH + "/" + file_name, "wb") as file:
+                size = 0
+                while size <= int(file_size):
+                    data = conn.recv(1024)
+                    if not (data):
+                        break
+                    file.write(data)
+                    size += len(data)
+
+                
+            
 
     
     conn.close()
