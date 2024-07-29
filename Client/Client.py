@@ -34,7 +34,7 @@ send_size += b' ' * (100 - len(send_size))
 client.send(send_size)
 
 
-<<<<<<< HEAD
+
 with open(file_name, "rb") as file:
     size = 0
     # Starting the time capture.
@@ -53,8 +53,4 @@ with open(file_name, "rb") as file:
 print("File Transfer Complete.Total time: ", end_time - start_time)
 
 client.close()
-# end(DISCONNECT_MESSAGE)
-=======
-send(DISCONNECT_MESSAGE)
->>>>>>> ed63e69fa427a61f30f8a1e36d041eb125c7613d
->>>>>>> 1523cc2c5c31294162fdb3aaab04444d36d13bd8
+
