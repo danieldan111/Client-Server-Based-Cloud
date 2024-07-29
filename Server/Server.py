@@ -29,7 +29,7 @@ def handle_client(conn, addr):
 
 def start():
     server.listen()
-    print(f"[LISTENING] Server is listnening on{SERVER}")
+    print(f"[LISTENING] Server is listnening on {SERVER}")
     while True:
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
