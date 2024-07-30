@@ -4,6 +4,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
+import customtkinter
 
 
 PORT = 5050
@@ -77,17 +78,18 @@ def send_file(path):
     
     
 
-def download_file(): 
+def download_file(fl_name): 
     mode = "download".encode()
     mode += b' ' * (100 - len(mode)) 
     client.send(mode)
 
-    files_amount = int(client.recv(500).decode())
+    # files_amount = int(client.recv(500).decode())
     
-    for i in range(files_amount):
-        print(client.recv(500).decode().strip())
+    # for i in range(files_amount):
+    #     print(client.recv(500).decode().strip())
 
-    file_download = input("enter name of file to download (enter '!exit!' to not download anything): ")
+    # file_download = input("enter name of file to download (enter '!exit!' to not download anything): ")
+    file_download = fl_name
     send_download = file_download.encode()
     send_download += b' ' * (500 - len(send_download))
 
@@ -120,8 +122,9 @@ def download_file():
             file.write(data)
             size += len(data)
 
-
-
+    msg = client.recv(500).decode()
+    print("msg is " + msg.strip())
+    return msg.strip()
 
 
 def clear_sc():
@@ -149,9 +152,12 @@ def upload_page():
         path_entry.insert(0, filename)
     def upload():
         path = path_entry.get()
-        msg = send_file(path)
-        msg_label.config(text=msg)
-   
+        if os.path.exists(path):
+            msg = send_file(path)
+            msg_label.config(text=msg)
+        else:
+            msg_label.config(text="path doesn't exsits") 
+    
     top_frame = Frame(window, width=width, height=450, bg="#161625")
     top_frame.pack()
 
@@ -188,16 +194,63 @@ def upload_page():
     scan_btn = Button(frame2, text="Upload", font=("Arial", 23) ,command=upload)
     scan_btn.pack()
 
-    scan_btn = Button(window, text="Back To Menu", font=("Arial", 23) ,command=main_page)
-    scan_btn.pack(side=BOTTOM,anchor=SW,padx=30, pady=30)
+    back_btn = Button(window, text="Back To Menu", font=("Arial", 23) ,command=main_page)
+    back_btn.pack(side=BOTTOM,anchor=SW,padx=30, pady=30)
 
     msg_label = Label(frame2, text="", font=('Arial', 20),bg='#161625', fg='White')
     msg_label.pack()
 
 def download_page():
+    def opt(btn):
+        global selection
+        selection = btn
+        
+        for widget in files_scroll.winfo_children():
+            if widget != btn:
+                widget.configure(fg_color="#161625", text_color="white")
+            else:
+                widget.configure(fg_color="white", text_color="black")  
+        
+    def show():
+        msg = download_file(selection.cget("text"))
+        msg_label.config(text=msg)
+
+    def add_file(name):
+        file_label = customtkinter.CTkButton(files_scroll, text=name,font=('Arial', 20),fg_color="#161625",text_color="white")
+        file_label.configure(command=lambda: opt(file_label))
+        file_label.pack()
+    
     clear_sc()
 
+    files_frame = Frame(window, bg="#161625")
+    files_frame.pack()
 
+
+    files_scroll = customtkinter.CTkScrollableFrame(files_frame, width=500, height=500)
+    files_scroll.pack(pady=40)
+
+
+    mode = "getFiles".encode()
+    mode += b' ' * (100 - len(mode)) 
+    client.send(mode)
+
+    files_amount = int(client.recv(500).decode())
+    
+    var = StringVar()
+    for i in range(files_amount):
+        file_name = client.recv(500).decode().strip()
+        add_file(file_name)
+        
+
+    
+    download_btn = Button(files_frame, text="Download", font=("Arial", 23) ,command=show)
+    download_btn.pack(padx=30, pady=30)
+
+    back_btn = Button(window, text="Back To Menu", font=("Arial", 23) ,command=main_page)
+    back_btn.pack(side=BOTTOM,anchor=SW,padx=30, pady=30)
+
+    msg_label = Label(files_frame, text="", font=('Arial', 20),bg='#161625', fg='White')
+    msg_label.pack()
 
 def main_page():
     clear_sc()

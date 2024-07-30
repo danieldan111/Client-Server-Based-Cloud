@@ -66,9 +66,11 @@ def handle_client(conn, addr):
             msg += b' ' * (500 - len(msg))
             conn.send(msg)
 
+        elif mode.strip() == "getFiles":
+            get_files()
+
 
         elif mode.strip() == "download":
-            get_files()
             file_name = conn.recv(500).decode().strip()
             if file_name == '!exit!':
                 break
@@ -102,7 +104,11 @@ def handle_client(conn, addr):
                             break
                         conn.send(data)
                         size += len(data)
-            
+
+                sucsses_msg = f"Succsesfully Downloaded {file_name} please check your Downloads folder!"
+                send_msg = sucsses_msg.encode()
+                send_msg += b' ' * (500 - len(send_msg))
+                conn.send(send_msg)
                 
 
     
