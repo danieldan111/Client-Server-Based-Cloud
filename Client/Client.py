@@ -10,7 +10,7 @@ import customtkinter
 PORT = 5050
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DIS_MSG"
-SERVER = "10.0.0.21"
+SERVER = "10.0.0.21" #ip of the server
 ADDR = (SERVER, PORT)
 
 window = tk.Tk()

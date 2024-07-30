@@ -9,7 +9,7 @@ ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DIS_MSG"
 
-#path to save
+#path to store files
 PATH = "C:\\Users\\ADMIN\\Documents\\Cloud-Project\\Cloud Storage"
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
