@@ -73,8 +73,8 @@ def send_file(path):
 
     msg = client.recv(500).decode()
     print(msg.strip())
-    # msg = client.recv(100).decode()
-    # print(msg)
+    return msg.strip()
+    
     
 
 def download_file(): 
@@ -149,8 +149,8 @@ def upload_page():
         path_entry.insert(0, filename)
     def upload():
         path = path_entry.get()
-        send_file(path)
-
+        msg = send_file(path)
+        msg_label.config(text=msg)
    
     top_frame = Frame(window, width=width, height=450, bg="#161625")
     top_frame.pack()
@@ -190,6 +190,9 @@ def upload_page():
 
     scan_btn = Button(window, text="Back To Menu", font=("Arial", 23) ,command=main_page)
     scan_btn.pack(side=BOTTOM,anchor=SW,padx=30, pady=30)
+
+    msg_label = Label(frame2, text="", font=('Arial', 20),bg='#161625', fg='White')
+    msg_label.pack()
 
 def download_page():
     clear_sc()
